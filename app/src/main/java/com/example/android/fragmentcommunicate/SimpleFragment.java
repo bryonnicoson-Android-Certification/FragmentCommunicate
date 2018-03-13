@@ -23,7 +23,12 @@ public class SimpleFragment extends Fragment {
     private static final int NO = 1;
     private static final int NONE = 2;
 
+    // keys for bundle
+    private static final String CHOICE = "choice";
+    private static final String RATING = "rating";
+
     public int mRadioButtonChoice = NONE;
+    public float mRating = 3.5f;
 
     OnFragmentInteractionListener mListener;
 
@@ -31,8 +36,13 @@ public class SimpleFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static SimpleFragment newInstance() {
-        return new SimpleFragment();
+    public static SimpleFragment newInstance(int choice, float rating) {
+        SimpleFragment fragment = new SimpleFragment();
+        Bundle arguments = new Bundle();
+        arguments.putInt(CHOICE, choice);
+        arguments.putFloat(RATING, rating);
+        fragment.setArguments(arguments);
+        return fragment;
     }
 
     @Override
@@ -41,6 +51,18 @@ public class SimpleFragment extends Fragment {
 
         final View rootView = inflater.inflate(R.layout.fragment_simple, container, false);
         final RadioGroup radioGroup = rootView.findViewById(R.id.radio_group);
+        final RatingBar ratingBar = rootView.findViewById(R.id.ratingBar);
+
+        // if a radio button choice was made, get it, and update ui
+        if (getArguments().containsKey(CHOICE)) {
+            mRadioButtonChoice = getArguments().getInt(CHOICE);
+            if (mRadioButtonChoice != NONE) {
+                radioGroup.check(radioGroup.getChildAt(mRadioButtonChoice).getId());
+            }
+        }
+
+        // set rating to bundled value or default
+        ratingBar.setRating(getArguments().getFloat(RATING, 3.5f));
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -70,12 +92,12 @@ public class SimpleFragment extends Fragment {
             }
         });
 
-        final RatingBar ratingBar = rootView.findViewById(R.id.ratingBar);
-
         ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
                 Toast.makeText(getContext(), "Rating: " + rating, Toast.LENGTH_SHORT).show();
+                mRating = rating;
+                mListener.onRatingBarChoice(rating);
             }
         });
 
@@ -85,6 +107,7 @@ public class SimpleFragment extends Fragment {
 
     interface OnFragmentInteractionListener {
         void onRadioButtonChoice(int choice);
+        void onRatingBarChoice(float rating);
     }
 
     @Override

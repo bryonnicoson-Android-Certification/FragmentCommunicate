@@ -34,6 +34,7 @@ public class MainActivity
     static final String STATE_FRAGMENT = "state_of_fragment";
 
     private int mRadioButtonChoice = 2; // default (NONE)
+    private float mRating = 3.5f; // default
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +68,7 @@ public class MainActivity
 
     public void displayFragment() {
         // create simpleFragment instance
-        SimpleFragment simpleFragment = SimpleFragment.newInstance();
+        SimpleFragment simpleFragment = SimpleFragment.newInstance(mRadioButtonChoice, mRating);
 
         // get FragmentManager, start transaction
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -97,4 +98,10 @@ public class MainActivity
         mRadioButtonChoice = choice;
         Toast.makeText(this, "Choice is " + Integer.toString(choice), Toast.LENGTH_SHORT).show();
     }
+
+    @Override
+    public void onRatingBarChoice(float rating) {
+        mRating = rating;
+    }
+
 }
